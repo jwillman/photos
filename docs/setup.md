@@ -31,11 +31,15 @@ az account show --query id -o tsv
 -   Go to your repository on GitHub.
 -   Navigate to Settings > Secrets and variables > Actions.
 -   Add the following secrets:
-    AZURE_CREDENTIALS: Paste the JSON output from the Service Principal creation.
-    RESOURCE_GROUP: Enter the name of the resource group (e.g., PhotographyResources).
+    -   AZURE_CREDENTIALS: Paste the JSON output from the Service Principal creation.
+    -   RESOURCE_GROUP: Enter the name of the resource group (e.g., Photos).
+    -   FUNCTIONAPP_PUBLISH_PROFILE:
+        Download the publish profile for your Function App from the Azure Portal.
+        Copy the contents of the .publishsettings file.
+        Add it as a secret named FUNCTIONAPP_PUBLISH_PROFILE.
 
 ## 5. Create Resource Group
 
 (Optional, if not already created) Create the resource group in Azure:
 
-az group create --name PhotographyResources --location "West Europe"
+az group create --name Photos --location "West Europe"

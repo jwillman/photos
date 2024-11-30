@@ -1,6 +1,13 @@
+@description('The location for the Event Grid resources')
 param location string
+
+@description('The name of the Event Grid topic')
 param eventGridTopicName string
-param functionAppEndpoint string
+
+@description('The URL of the Azure Function App endpoint')
+param functionAppUrl string
+
+@description('The storage account resource ID')
 param storageAccountId string
 
 resource systemTopic 'Microsoft.EventGrid/systemTopics@2021-06-01-preview' = {
@@ -19,12 +26,12 @@ resource eventSubscription 'Microsoft.EventGrid/systemTopics/eventSubscriptions@
     destination: {
       endpointType: 'WebHook'
       properties: {
-        endpointUrl: functionAppEndpoint
+        endpointUrl: functionAppUrl  // URL of the Azure Function App
       }
     }
     filter: {
       includedEventTypes: [
-        'Microsoft.Storage.BlobCreated'
+        'Microsoft.Storage.BlobCreated'  // Trigger only for BlobCreated events
       ]
     }
   }

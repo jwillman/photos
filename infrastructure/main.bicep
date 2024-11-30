@@ -46,13 +46,3 @@ module functionApp './modules/functionApp.bicep' = {
     storageAccountConnectionString: blobStorage.outputs.storageConnectionString
   }
 }
-
-module eventGrid './modules/eventGrid.bicep' = {
-  name: 'eventGridDeployment'
-  params: {
-    location: location
-    eventGridTopicName: eventGridTopicName
-    functionAppEndpoint: functionApp.outputs.functionAppUrl
-    storageAccountId: blobStorage.outputs.storageAccountId
-  }
-}
