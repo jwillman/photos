@@ -74,7 +74,19 @@ jobs:
                   SUBSCRIPTION_ID=$(az account show --query id -o tsv)
                   echo "SUBSCRIPTION_ID=${SUBSCRIPTION_ID}" >> $GITHUB_ENV
 
+            - name: Check if System Topic Exists
+              id: check-system-topic
+              run: |
+                  EXISTING=$(az eventgrid system-topic list --resource-group $RESOURCE_GROUP --query "[?name=='photosEvents']" -o tsv)
+                  if [ -n "$EXISTING" ]; then
+                    echo "SYSTEM_TOPIC_EXISTS=true" >> $GITHUB_ENV
+                  else
+                    echo "SYSTEM_TOPIC_EXISTS=false" >> $GITHUB_ENV
+              env:
+                  RESOURCE_GROUP: ${{ secrets.RESOURCE_GROUP }}
+
             - name: Deploy Event Grid
+              if: env.SYSTEM_TOPIC_EXISTS == 'false'
               run: |
                   az deployment group create \
                     --resource-group $RESOURCE_GROUP \
