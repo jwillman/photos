@@ -82,6 +82,7 @@ jobs:
                     echo "SYSTEM_TOPIC_EXISTS=true" >> $GITHUB_ENV
                   else
                     echo "SYSTEM_TOPIC_EXISTS=false" >> $GITHUB_ENV
+                  fi
               env:
                   RESOURCE_GROUP: ${{ secrets.RESOURCE_GROUP }}
 
