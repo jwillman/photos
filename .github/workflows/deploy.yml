@@ -1,4 +1,4 @@
-name: Deploy Azure Resources and Function
+name: Deploy Azure Resources and Function App
 
 on:
     push:
@@ -6,6 +6,7 @@ on:
             - master
 
 jobs:
+    # Step 1: Deploy infrastructure (without Event Grid subscription)
     deploy-infrastructure:
         runs-on: ubuntu-latest
         steps:
@@ -23,8 +24,12 @@ jobs:
                   az deployment group create \
                     --resource-group ${{ secrets.RESOURCE_GROUP }} \
                     --template-file infrastructure/main.bicep \
-                    --parameters storageAccountName=photosstorageunique123 functionAppName=photosFunction852141 appServicePlanName=photosPlan
+                    --parameters \
+                        storageAccountName=photosstorageunique123 \
+                        functionAppName=photosFunction852141 \
+                        appServicePlanName=photosPlan
 
+    # Step 2: Build and deploy the Azure Function App code
     deploy-function:
         needs: deploy-infrastructure
         runs-on: ubuntu-latest
@@ -39,15 +44,17 @@ jobs:
 
             - name: Build Azure Function (F#)
               run: |
-                  dotnet publish backend/src -c Release -o publish
+                  cd backend/src  # Navigate to the F# project directory
+                  dotnet publish -c Release -o ../../publish  # Build and publish the function app
 
             - name: Deploy Azure Function
               uses: Azure/functions-action@v1
               with:
                   app-name: photosFunction852141
-                  package: ./publish
+                  package: ./publish # Path to the published output directory
                   publish-profile: ${{ secrets.FUNCTIONAPP_PUBLISH_PROFILE }}
 
+    # Step 3: Deploy Event Grid subscription
     deploy-eventgrid:
         needs: deploy-function
         runs-on: ubuntu-latest
@@ -60,6 +67,12 @@ jobs:
               with:
                   creds: ${{ secrets.AZURE_CREDENTIALS }}
 
+            - name: Get Azure Subscription ID
+              id: get-subscription-id
+              run: |
+                  SUBSCRIPTION_ID=$(az account show --query id -o tsv)
+                  echo "SUBSCRIPTION_ID=${SUBSCRIPTION_ID}" >> $GITHUB_ENV
+
             - name: Deploy Event Grid
               run: |
                   az deployment group create \
@@ -68,4 +81,6 @@ jobs:
                     --parameters \
                         eventGridTopicName=photosEvents \
                         functionAppUrl=https://photosFunction852141.azurewebsites.net/api/ProcessBlobCreated \
-                        storageAccountId=/subscriptions/<SUBSCRIPTION_ID>/resourceGroups/<RESOURCE_GROUP>/providers/Microsoft.Storage/storageAccounts/photosstorageunique123
+                        storageAccountId=/subscriptions/$SUBSCRIPTION_ID/resourceGroups/${
+                        { secrets.RESOURCE_GROUP }} \
+                        /providers/Microsoft.Storage/storageAccounts/photosstorageunique123
