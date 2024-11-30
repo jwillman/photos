@@ -25,3 +25,14 @@ jobs:
                     --resource-group ${{ secrets.RESOURCE_GROUP }} \
                     --template-file infrastructure/main.bicep \
                     --parameters storageAccountName=photosstorage852141 functionAppName=photosFunction852141 appServicePlanName=photosPlan eventGridTopicName=photosEvents
+
+            - name: Build Azure Function (F#)
+              run: |
+                  dotnet publish backend/src -c Release -o publish
+
+            - name: Deploy Azure Function
+              uses: Azure/functions-action@v1
+              with:
+                  app-name: photosFunction852141
+                  package: ./publish
+                  publish-profile: ${{ secrets.FUNCTIONAPP_PUBLISH_PROFILE }}
