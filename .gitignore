@@ -1,0 +1,78 @@
+# General
+.DS_Store
+Thumbs.db
+
+# Logs
+logs/
+*.log
+
+# Node.js (if used for frontend)
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Bicep
+*.bicep.cache
+
+# Build artifacts
+bin/
+obj/
+publish/
+
+# Azure Functions
+local.settings.json
+.azure/
+
+# GitHub Actions
+.github/*.log
+.github/workflows/*_temp
+
+# OS-generated files
+*.swp
+*.swo
+*.bak
+*.tmp
+
+# Python (if virtual environments are used)
+__pycache__/
+*.py[cod]
+*.pyo
+.Python
+env/
+venv/
+
+# Static Site
+frontend/assets/uploads/   # Avoid adding large media files if temporarily processed here
+frontend/dist/             # Ignore built files if using a build system
+
+# macOS-specific files
+*.DS_Store
+
+# Windows-specific files
+Thumbs.db
+desktop.ini
+
+# Visual Studio Code
+.vscode/
+*.code-workspace
+
+# Secrets and sensitive data
+.env
+*.env.local
+secrets.json
+
+# Additional IDE/editor files
+.idea/
+*.iml
+*.sublime-workspace
+*.sublime-project
+
+# Temporary files
+*.tmp
+*.temp
+*.bak
+~$*
+
+# Other
+!README.md # Keep README files
