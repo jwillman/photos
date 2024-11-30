@@ -80,6 +80,7 @@ jobs:
                     --resource-group $RESOURCE_GROUP \
                     --template-file infrastructure/eventGrid.bicep \
                     --parameters \
+                        location="West Europe" \ 
                         eventGridTopicName=photosEvents \
                         functionAppUrl=https://photosFunction852141.azurewebsites.net/api/ProcessBlobCreated \
                         storageAccountId=/subscriptions/$SUBSCRIPTION_ID/resourceGroups/$RESOURCE_GROUP/providers/Microsoft.Storage/storageAccounts/photosstorageunique123
