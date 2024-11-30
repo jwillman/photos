@@ -10,9 +10,6 @@ param functionAppName string
 @description('The name of the app service plan')
 param appServicePlanName string
 
-@description('The Event Grid system topic name')
-param eventGridTopicName string
-
 @description('The storage container name for photos')
 param photoContainerName string = 'photos'
 
