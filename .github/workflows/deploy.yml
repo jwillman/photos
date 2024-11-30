@@ -24,4 +24,4 @@ jobs:
                   az deployment group create \
                     --resource-group ${{ secrets.RESOURCE_GROUP }} \
                     --template-file infrastructure/main.bicep \
-                    --parameters storageAccountName=photosstorage852141 functionAppName=photosFunction appServicePlanName=photosPlan eventGridTopicName=photosEvents
+                    --parameters storageAccountName=photosstorage852141 functionAppName=photosFunction852141 appServicePlanName=photosPlan eventGridTopicName=photosEvents
