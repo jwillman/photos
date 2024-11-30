@@ -6,6 +6,7 @@ param storageAccountConnectionString string
 resource functionApp 'Microsoft.Web/sites@2021-02-01' = {
   name: functionAppName
   location: location
+  kind: 'functionapp' 
   properties: {
     serverFarmId: appServicePlanId
     siteConfig: {
@@ -26,5 +27,6 @@ resource functionApp 'Microsoft.Web/sites@2021-02-01' = {
     }
   }
 }
+
 
 output functionAppUrl string = 'https://${functionApp.name}.azurewebsites.net'
