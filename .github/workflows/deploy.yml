@@ -30,7 +30,7 @@ jobs:
               env:
                   RESOURCE_GROUP: ${{ secrets.RESOURCE_GROUP }}
 
-    deploy-function:
+    deploy-infra:
         needs: deploy-infrastructure
         runs-on: ubuntu-latest
         steps:
@@ -42,9 +42,9 @@ jobs:
               with:
                   creds: ${{ secrets.AZURE_CREDENTIALS }}
 
-            - name: Build Azure Function (F#)
+            - name: Build Azure Function (C#)
               run: |
-                  cd backend/src
+                  cd backend/PhotoMetadataUpdater
                   dotnet publish -c Release -o ../../publish
               env:
                   RESOURCE_GROUP: ${{ secrets.RESOURCE_GROUP }}
@@ -55,47 +55,3 @@ jobs:
                   app-name: photosFunction852141
                   package: ./publish
                   publish-profile: ${{ secrets.FUNCTIONAPP_PUBLISH_PROFILE }}
-
-    deploy-eventgrid:
-        needs: deploy-function
-        runs-on: ubuntu-latest
-        steps:
-            - name: Checkout Code
-              uses: actions/checkout@v3
-
-            - name: Login to Azure
-              uses: azure/login@v1
-              with:
-                  creds: ${{ secrets.AZURE_CREDENTIALS }}
-
-            - name: Get Azure Subscription ID
-              id: get-subscription-id
-              run: |
-                  SUBSCRIPTION_ID=$(az account show --query id -o tsv)
-                  echo "SUBSCRIPTION_ID=${SUBSCRIPTION_ID}" >> $GITHUB_ENV
-
-            - name: Check if System Topic Exists
-              id: check-system-topic
-              run: |
-                  EXISTING=$(az eventgrid system-topic list --resource-group $RESOURCE_GROUP --query "[?name=='photosEvents']" -o tsv)
-                  if [ -n "$EXISTING" ]; then
-                    echo "SYSTEM_TOPIC_EXISTS=true" >> $GITHUB_ENV
-                  else
-                    echo "SYSTEM_TOPIC_EXISTS=false" >> $GITHUB_ENV
-                  fi
-              env:
-                  RESOURCE_GROUP: ${{ secrets.RESOURCE_GROUP }}
-
-            - name: Deploy Event Grid
-              if: env.SYSTEM_TOPIC_EXISTS == 'false'
-              run: |
-                  az deployment group create \
-                    --resource-group $RESOURCE_GROUP \
-                    --template-file infrastructure/eventGrid.bicep \
-                    --parameters \
-                      location="West Europe" \
-                      eventGridTopicName="photosEvents" \
-                      functionAppUrl="https://photosFunction852141.azurewebsites.net/api/ProcessBlobCreated" \
-                      storageAccountId="/subscriptions/$SUBSCRIPTION_ID/resourceGroups/$RESOURCE_GROUP/providers/Microsoft.Storage/storageAccounts/photosstorageunique123"
-              env:
-                  RESOURCE_GROUP: ${{ secrets.RESOURCE_GROUP }}
