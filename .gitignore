@@ -18,7 +18,7 @@ extensions.csproj
 *.log
 
 # Ignore IDE and editor files
-.vscode/
+
 .idea/
 *.code-workspace
 
